@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- 15-21 -->
+    <meta charset="utf-8" />
+ 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<meta charset="utf-8">
+	<title>PIZZA GENERATOR</title>
+	<meta name="description" content="Pizza Generator - пример приложения на React.">
+	<meta name="robots" content="index, follow">
+	<meta name="author" content="Pizza Generator">
+	
+	<meta property="og:title" content="Pizza Generator">
+	<meta property="og:url" content="http://petr.spb.ru/pizza/">
+	<meta property="og:image" content="http://petr.spb.ru/pizza/img/generator.png">
+	<meta property="article:author" content="Petr Gromov">
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+	
+ 
+    <link href="src/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/4.1.0/mocha.min.css" />
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/4.1.0/mocha.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.1.2/chai.min.js"></script>
+	<script>
+		var assert = chai.assert;
+	</script>
+	<script src="src/js/pizzagenerator.js"></script>
+
+</head>
+
+<body>
+	<script>mocha.setup('bdd');</script>
+
+	<div id="mocha"></div>
+</body> 
+ 
+
+<!-- tests -->
+<script src="test/pizzagenerator.test.js"></script>
+<script>mocha.run()</script>
+
+</html>
