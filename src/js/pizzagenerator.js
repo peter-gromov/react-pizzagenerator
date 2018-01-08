@@ -160,6 +160,7 @@ class PizzaEngine {
 		this.orders = [];
 	}
 
+
 	addOrder( pizza, quantity ){
 		quantity = !quantity ? 1 : quantity;
 		if( pizza instanceof Pizza ){
@@ -173,17 +174,12 @@ class PizzaEngine {
 	clearOrders(){
 		this.orders = [];
 	}
-	clearCanvas(){
-		this.canvas = new Pizza();
+
+	//Переносит текущую пиццу в заказы
+	doOrder(){
+		this.addOrder( this.canvas );
+		this.clearCanvas();
 	}
-	setCanvas(pizza){
-		if( pizza instanceof Pizza){
-			this.canvas = pizza;	
-		}		
-	}
-
-
-
 
 	// Получить конкретный заказ из массива
 	getOrder(id){
@@ -191,10 +187,15 @@ class PizzaEngine {
 	}
 
 
-	//Переносит текущую пиццу в заказы
-	doOrder(){
-		this.addOrder( this.canvas );
-		this.clearCanvas();
+
+	clearCanvas(){
+		this.canvas = new Pizza();
+	}
+
+	setCanvas(pizza){
+		if( pizza instanceof Pizza){
+			this.canvas = pizza;	
+		}		
 	}
 
 
@@ -217,7 +218,6 @@ class PizzaEngine {
 		}
 		return weight;
 	}
-
 
 	//Формирует случайную пиццу
 	randomizeCanvas(){
