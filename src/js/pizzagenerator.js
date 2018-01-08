@@ -1,11 +1,8 @@
 "use strict";
 
-
+//Класс настроек
 class PizzaConfig {
 	constructor(){
-		this.settings = {};
-
-
 		this.settings = {};
 
 		this.settings.diameter = [
@@ -28,11 +25,11 @@ class PizzaConfig {
 			{ name: 'Морской коктейль', price: 80 , id: 1001, weight: 70},
 			{ name: 'Тигровая креветка', price: 70 , id: 1002, weight: 70},
 			{ name: 'Бекон', price: 50 , id: 1003, weight: 40},
-			{ name: 'Салями', price: 80 , id: 1004, weight: 40},
-			{ name: 'Чорризо', price: 80 , id: 1005, weight: 40},
-			{ name: 'Курица', price: 110 , id: 1006, weight: 70},
-			{ name: 'Говядина', price: 80 , id: 1007, weight: 70},
-			{ name: 'Халапеньо', price: 80 , id: 1008, weight: 50},
+			{ name: 'Салями', price: 110 , id: 1004, weight: 40},
+			{ name: 'Чорризо', price: 110 , id: 1005, weight: 40},
+			{ name: 'Курица', price: 90 , id: 1006, weight: 70},
+			{ name: 'Говядина', price: 90 , id: 1007, weight: 70},
+			{ name: 'Халапеньо', price: 75 , id: 1008, weight: 50},
 			{ name: 'Чеснок', price: 80 , id: 1009, weight: 10},
 			{ name: 'Доп. майонез', price: 80 , id: 1010, weight: 25}
 		];
@@ -74,10 +71,19 @@ class PizzaConfig {
 
 		return false;
 	}
+
+	//Получить случайную настройку
+	getRandomRow (where){
+		let i;
+		if( typeof where == 'undefined' || typeof this.settings[where] == 'undefined' ) return false;	
+		return this.settings[where][ Math.floor(Math.random() *this.settings[where].length) ];
+	}
 }
-var pizzaConfig = new PizzaConfig();
+const pizzaConfig = new PizzaConfig();
 
 
+
+//Класс для работы с пиццами 
 class Pizza {
 	constructor ( diameter, width, base, ingredients ){
 		this.diameter = diameter || 500;
@@ -89,19 +95,16 @@ class Pizza {
 
 	//Get price of the pizza through config
 	get price (){
-
-		let totalPrice = 0,
-			ingredient;
+		let totalPrice = 0;
 
 		totalPrice +=  pizzaConfig.price ( this.diameter ) ;
 		totalPrice +=  pizzaConfig.price ( this.width ) ;
 		totalPrice +=  pizzaConfig.price ( this.base ) ;
 		
 		//Добавляем цену ингредиентов
-		for( ingredient of this.ingredients ){
+		for( let ingredient of this.ingredients ){
 			totalPrice += pizzaConfig.price(ingredient.id) * ingredient.quantity;
 		}
-
 
 		return totalPrice;
 	}
@@ -109,19 +112,16 @@ class Pizza {
 
 	//Get price of the pizza through config
 	get weight (){
-
-		let totalWeight = 0,
-			ingredient;
+		let totalWeight = 0;
 
 		totalWeight +=  pizzaConfig.weight ( this.diameter ) ;
 		totalWeight +=  pizzaConfig.weight ( this.width ) ;
 		totalWeight +=  pizzaConfig.weight ( this.base ) ;
 		
 		//Добавляем цену ингредиентов
-		for( ingredient of this.ingredients ){
+		for( let ingredient of this.ingredients ){
 			totalWeight += pizzaConfig.weight(ingredient.id) * ingredient.quantity;
 		}
-
 
 		return totalWeight;
 	}
@@ -130,8 +130,7 @@ class Pizza {
 	//Get name of pizza thgough config
 	get name (){
 		let pizzaName = '',
-			ingredients = [],
-			i;
+			ingredients = [];
 
 		pizzaName += 'Пицца ' + pizzaConfig.name(this.diameter) +
 						', '  + pizzaConfig.name(this.width).toLowerCase() + ' тесто' +
@@ -140,7 +139,7 @@ class Pizza {
 
 		if( this.ingredients.length > 0 ){
 			pizzaName += ', доп.: ';
-			for(i of this.ingredients ){
+			for(let i of this.ingredients ){
 				ingredients[ ingredients.length ] = pizzaConfig.name(i.id).toLowerCase() + (i.quantity > 1? ' ('+i.quantity+' шт.)' : '');
 			}
 			pizzaName += ingredients.join(', ');
@@ -152,44 +151,106 @@ class Pizza {
 };
 
 
-var PizzaGen = {};
 
+//Класс для работы с заказами
+class PizzaEngine {
 
-//Текущая пицца
-PizzaGen.canvas = {};
-
-//Отложенный заказ
-PizzaGen.order = [
-	/*
-		{
-			quantity: 1,
-			pizza: {
-				diameter: 501,
-				width: 101,
-				base: 700,
-				ingredients: [
-					{ id: 1001, quantity: 2},
-					{ id: 1003, quantity: 1},
-					{ id: 1007, quantity: 1}
-				]
-			}
-		}
-	*/
-
-];
-
-
- 
-
-PizzaGen.getTotalPrice = function(order){
-	var totalPrice = 0;
-
-	for(var k in order){
-		//console.log( order[k] );
-		totalPrice += this.getPizzaPrice(  order[k].pizza ) *  order[k].quantity  ;
+	constructor(){
+		this.canvas = new Pizza();
+		this.orders = [];
 	}
 
-	return totalPrice;
-};
+	addOrder( pizza, quantity ){
+		quantity = !quantity ? 1 : quantity;
+		if( pizza instanceof Pizza ){
+			this.orders.push( {pizza: pizza, quantity: quantity} );
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	clearOrders(){
+		this.orders = [];
+	}
+	clearCanvas(){
+		this.canvas = new Pizza();
+	}
+	setCanvas(pizza){
+		if( pizza instanceof Pizza){
+			this.canvas = pizza;	
+		}		
+	}
 
 
+
+
+	// Получить конкретный заказ из массива
+	getOrder(id){
+		return this.orders[id];
+	}
+
+
+	//Переносит текущую пиццу в заказы
+	doOrder(){
+		this.addOrder( this.canvas );
+		this.clearCanvas();
+	}
+
+
+	// Получить стоимость всей карзины
+	get totalPrice(){
+		let price = 0;
+
+		for( let order of this.orders ){
+			price += order.pizza.price * order.quantity;
+		}
+		return price;
+	}
+
+	// Получить вес всей карзины
+	get totalWeight(){
+		let weight = 0;
+
+		for( let order of this.orders ){
+			weight += order.pizza.weight * order.quantity;
+		}
+		return weight;
+	}
+
+
+	//Формирует случайную пиццу
+	randomizeCanvas(){
+		let newPizza = new Pizza(),
+			maxIngredients;
+
+		maxIngredients = Math.floor( Math.random()*4 );
+
+		newPizza.diameter = pizzaConfig.getRandomRow('diameter').id;
+		newPizza.width = pizzaConfig.getRandomRow('width').id;
+		newPizza.base = pizzaConfig.getRandomRow('base').id;
+
+		//Накидываем на пиццу случайные ингредиенты
+		for( let i = 0; i < maxIngredients; i++ ){
+			let randomId = pizzaConfig.getRandomRow('ingredients').id,
+				randomQuantity =  Math.ceil( Math.random() * 2),
+				k = newPizza.ingredients.findIndex( (el) => {   return el.id === randomId; }) ;
+
+			//Если такой нагенеренный ингредиент уже есть - просто увеличим количество уже существующего (чтобы не дублировался ингредиент)
+			//Если не найден - записываем новый ингредиент
+			if( k === -1  ) {
+				newPizza.ingredients.push({
+					id: randomId,
+					quantity: randomQuantity
+				});
+			}else{
+				newPizza.ingredients[k].quantity++;
+			}
+
+		}
+
+		this.setCanvas(newPizza);
+	}
+}
+
+let pizzaGen = new PizzaEngine();
